@@ -1,0 +1,8 @@
+
+\.DS_Store
+
+\.cached_rate\.json
+
+\.idea/
+
+__pycache__/
