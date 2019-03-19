@@ -16,7 +16,7 @@ def get_current() -> decimal.Decimal:
     return round(decimal.Decimal(result), 4)
 
 
-def save_to_cache(rate: decimal.Decimal) -> datetime.date:
+def save_rate_to_cache(rate: decimal.Decimal) -> datetime.date:
     date = datetime.datetime.today().date()
     data = {
         'rate': float(round(rate, 4)),
@@ -27,28 +27,30 @@ def save_to_cache(rate: decimal.Decimal) -> datetime.date:
     return date
 
 
-# TODO: KeyError, FileNotFoundError
 def load_rate_from_cache() -> tuple:
     with open(constants.CACHE_FILE_NAME, 'rb') as fp:
         cached_rate = json.load(fp)
     return (
         round(decimal.Decimal(cached_rate['rate']), 4),
-        cached_rate['date']
+        datetime.datetime.strptime(cached_rate['date'], '%d.%m.%Y').date()
     )
+
+
+def get_amount(args) -> decimal.Decimal:
+    parser = argparse.ArgumentParser(description='USD -> RUB converter.')
+    parser.add_argument('amount', type=decimal.Decimal, help='Amount of money to exchange')
+    args_ = parser.parse_args(args)
+    return round(args_.amount, 4)
 
 
 def get_initial() -> tuple:
     try:
         rate = get_current()
     except urllib.error.URLError:
-        rate, date = load_rate_from_cache()
+        try:
+            rate, date = load_rate_from_cache()
+        except FileNotFoundError:
+            raise SystemExit('Failed to load current rate')
     else:
-        date = save_to_cache(rate)
+        date = save_rate_to_cache(rate)
     return rate, date
-
-
-def get_amount() -> decimal.Decimal:
-    parser = argparse.ArgumentParser(description='USD -> RUB converter.')
-    parser.add_argument('amount', type=decimal.Decimal, help='Amount of money to exchange')
-    args = parser.parse_args()
-    return round(args.amount, 4)
