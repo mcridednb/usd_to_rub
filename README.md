@@ -1,6 +1,6 @@
 # USD TO RUB
 
-**Very simple dollar to ruble converter.**
+**The easiest dollar to ruble converter.**
 
 ---
 
