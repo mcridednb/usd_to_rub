@@ -1,4 +1,4 @@
-# [USD TO RUB][docs]
+# USD TO RUB
 
 **Very simple dollar to ruble converter.**
 
