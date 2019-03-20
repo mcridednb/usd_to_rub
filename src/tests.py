@@ -1,15 +1,13 @@
-import json
-import unittest
-import decimal
-
 import datetime
-
+import decimal
+import json
 import os
+import unittest
 import urllib.error
 
-import constants
-import models
-import utils
+from src import constants
+from src import models
+from src import utils
 
 
 class TestApp(unittest.TestCase):
@@ -45,7 +43,7 @@ class TestApp(unittest.TestCase):
         self.assertRaises(SystemExit, utils.get_amount, ['10', '12', '14'])
 
     def test_initial_rate(self):
-        rate = models.Rate(*utils.get_initial())
+        rate = models.Rate()
         self.assertTrue(isinstance(rate, models.Rate))
         self.assertTrue(isinstance(rate.rate, decimal.Decimal))
         self.assertTrue(isinstance(rate.date, datetime.date))

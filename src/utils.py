@@ -1,12 +1,16 @@
-import urllib.parse
-import urllib.request
-import urllib.error
-import json
+import argparse
 import datetime
 import decimal
-import argparse
+import json
+import logging.config
+import urllib.error
+import urllib.parse
+import urllib.request
 
-import constants
+from src import constants
+
+logging.config.fileConfig('logger.conf')
+logger = logging.getLogger('converter')
 
 
 def get_current() -> decimal.Decimal:
@@ -36,7 +40,7 @@ def load_rate_from_cache() -> tuple:
     )
 
 
-def get_amount(args) -> decimal.Decimal:
+def get_amount(args: list) -> decimal.Decimal:
     parser = argparse.ArgumentParser(description='USD -> RUB converter.')
     parser.add_argument('amount', type=decimal.Decimal, help='Amount of money to exchange')
     args_ = parser.parse_args(args)
@@ -45,12 +49,18 @@ def get_amount(args) -> decimal.Decimal:
 
 def get_initial() -> tuple:
     try:
+        logger.info('Trying to get the current rate from API...')
         rate = get_current()
-    except urllib.error.URLError:
+    except urllib.error.URLError as e:
+        logger.error(f'Failed to load the current rate from API. Error from server: {e}')
         try:
+            logger.info('Trying to get the current rate from the cache...')
             rate, date = load_rate_from_cache()
         except FileNotFoundError:
-            raise SystemExit('Failed to load current rate')
-    else:
-        date = save_rate_to_cache(rate)
+            logger.error('Failed to load the current rate from the cache')
+            raise SystemExit('Failed to load the current rate')
+        logger.info('Success to load the current rate from cache')
+        return rate, date
+    logger.info('Success to load the current rate from API')
+    date = save_rate_to_cache(rate)
     return rate, date
