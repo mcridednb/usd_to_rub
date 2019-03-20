@@ -14,7 +14,7 @@ def start():
     except decimal.InvalidOperation:
         raise SystemExit('Error. Invalid amount')
     else:
-        print(f'Dollar exchange rate as of {rate.date.strftime("%m/%d/%Y")}: {rate.rate} rubles')
+        print(f'А dollar exchange rate as at {rate.date.strftime("%m/%d/%Y")} amounts to {rate.rate}')
         print(f'{amount} USD in RUB: {result}')
 
 
